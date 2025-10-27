@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IdeaFlowAI – Where Ideas Transform</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".feature-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        const feature = button.textContent.trim();
+        alert(`You clicked: ${feature}\nFeature launching soon!`);
+      });
+    });
+  });
+</script>
+
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    header {
+      padding: 30px 20px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      color: #a8dadc;
+      margin-top: 10px;
+      font-weight: 400;
+    }
+
+    main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      padding: 30px;
+    }
+
+    .intro {
+      max-width: 700px;
+      font-size: 1.1rem;
+      color: #e0f7fa;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .feature-btn {
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 14px 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .feature-btn:hover {
+      transform: translateY(-5px);
+      background: linear-gradient(90deg, #04d9ff, #09f);
+    }
+
+    footer {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 15px 10px;
+      font-size: 0.9rem;
+      color: #b2ebf2;
+    }
+
+    footer a {
+      color: #00d4ff;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>IdeaFlowAI</h1>
+    <h2>Where Ideas Transform</h2>
+  </header>
+
+  <main>
+    <p class="intro">
+      Turn your text, notes, or ideas into videos, voiceovers, presentations, and visual organizers — all powered by AI. 
+      Seamless, smart, and designed for creative thinkers like you.
+    </p>
+
+    <div class="features">
+      <button class="feature-btn">Convert Text → Video</button>
+      <button class="feature-btn">Convert Text → Voice</button>
+      <button class="feature-btn">Convert Text → Presentation</button>
+      <button class="feature-btn">Convert Text → Audio</button>
+      <button class="feature-btn">Convert Text → Graphic Organizer</button>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 IdeaFlowAI | 
+    <a href="#">Contact</a> | 
+    <a href="#">Privacy Policy</a>
+  </footer>
+</body>
+</html>
