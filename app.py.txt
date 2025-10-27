@@ -1,0 +1,59 @@
+from flask import Flask, request, send_file
+import io
+from gtts import gTTS
+from pptx import Presentation
+from moviepy.editor import TextClip
+import pdfkit
+import os
+
+app = Flask(__name__)
+
+@app.route('/convert', methods=['POST'])
+def convert():
+    text = request.form['text']
+    conversion_type = request.form['type']
+
+    try:
+        if conversion_type == 'pdf':
+            output = io.BytesIO()
+            pdfkit.from_string(text, output)
+            output.seek(0)
+            return send_file(output, download_name='output.pdf', as_attachment=True)
+
+        elif conversion_type == 'audio':
+            tts = gTTS(text=text, lang='en')
+            output = io.BytesIO()
+            tts.write_to_fp(output)
+            output.seek(0)
+            return send_file(output, download_name='output.mp3', as_attachment=True)
+
+        elif conversion_type == 'presentation':
+            prs = Presentation()
+            slide = prs.slides.add_slide(prs.slide_layouts[1])
+            title = slide.shapes.title
+            title.text = "IdeaFlowAI Slide"
+            content = slide.placeholders[1]
+            content.text = text
+            output = io.BytesIO()
+            prs.save(output)
+            output.seek(0)
+            return send_file(output, download_name='output.pptx', as_attachment=True)
+
+        elif conversion_type == 'video':
+            clip = TextClip(txt=text, fontsize=70, color='white', bg_color='black').set_duration(5)
+            output_path = 'output.mp4'
+            clip.write_videofile(output_path, fps=24)
+            response = send_file(output_path, download_name='output.mp4', as_attachment=True)
+            os.remove(output_path)  # Clean up
+            return response
+
+        elif conversion_type == 'graphic':
+            return {"message": "Use client-side Mermaid.js for graphic organizers"}
+
+        return {"error": "Invalid conversion type"}, 400
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+if __name__ == '__main__':
+    app.run(debug=True)

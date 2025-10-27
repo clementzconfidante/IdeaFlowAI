@@ -1,0 +1,1 @@
+pip install flask gtts python-pptx moviepy pdfkit
