@@ -1,0 +1,6 @@
+nav a {
+    pointer-events: auto;  /* Enables clicks */
+    cursor: pointer;
+    z-index: 10;  /* Above other elements */
+    position: relative;  /* For z-index */
+}
