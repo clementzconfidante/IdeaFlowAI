@@ -6,6 +6,8 @@
     <title>TheIdeaFlowAI - Complete Text Conversion Suite</title>
     <meta name="description" content="Convert text to audio, PDF, video, presentations, and graphic organizers for free with AI.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; }
@@ -17,4 +19,440 @@
         .cta-button:hover { background: #ff5252; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6); }
         .features { padding: 80px 0; background: white; }
         .features h2 { text-align: center; font-size: 2.2rem; margin-bottom: 50px; color: #2c3e50; }
-        .feature-grid { display: grid; grid-template
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .feature { background: white; padding: 30px 20px; border-radius: 12px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #f0f0f0; }
+        .feature:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .feature i { font-size: 2.5rem; margin-bottom: 20px; color: #2575fc; }
+        .feature h3 { font-size: 1.4rem; margin-bottom: 15px; color: #2c3e50; }
+        .feature p { color: #7f8c8d; }
+        .converter { padding: 80px 0; text-align: center; background: #f4f4f4; }
+        .converter h2 { font-size: 2.2rem; margin-bottom: 40px; color: #2c3e50; }
+        .converter textarea { width: 100%; max-width: 700px; height: 180px; padding: 20px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 25px; font-size: 1rem; resize: vertical; font-family: inherit; }
+        .converter select, .converter button { padding: 12px 25px; margin: 0 10px; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; font-family: inherit; }
+        .converter select { background: white; border: 1px solid #ddd; width: 220px; }
+        .converter button { background: #2575fc; color: white; transition: all 0.3s ease; font-weight: bold; }
+        .converter button:hover { background: #1a67e8; transform: translateY(-2px); }
+        .converter button:disabled { background: #bdc3c7; cursor: not-allowed; transform: none; }
+        .output-section { padding: 40px 0; text-align: center; }
+        .output-section h3 { font-size: 1.6rem; margin-bottom: 20px; color: #2c3e50; }
+        .output-container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); max-width: 900px; margin: 0 auto; min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #graphicOrganizer { width: 100%; height: 400px; background: #f8f9fa; border-radius: 8px; margin-top: 20px; position: relative; }
+        #videoPreview { width: 100%; max-width: 600px; height: 300px; background: #000; border-radius: 8px; margin-top: 20px; display: flex; align-items: center; justify-content: center; color: white; }
+        #presentationPreview { width: 100%; height: 400px; background: #f8f9fa; border-radius: 8px; margin-top: 20px; display: flex; overflow-x: auto; padding: 20px; }
+        .slide { min-width: 300px; height: 100%; background: white; margin-right: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px; }
+        #status { margin-top: 20px; font-weight: bold; min-height: 24px; }
+        .audio-controls { margin-top: 20px; display: flex; justify-content: center; gap: 10px; }
+        .audio-controls button { padding: 8px 16px; background: #2575fc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        footer { background: #2c3e50; color: white; text-align: center; padding: 30px 0; margin-top: 60px; }
+        .node { position: absolute; background: #2575fc; color: white; padding: 10px 15px; border-radius: 6px; text-align: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .connector { position: absolute; height: 2px; background: #2575fc; transform-origin: 0 0; }
+        @media (max-width: 768px) { 
+            h1 { font-size: 2rem; } 
+            .subtitle { font-size: 1.1rem; } 
+            .converter select, .converter button { margin: 5px; width: 100%; max-width: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>TheIdeaFlowAI</h1>
+            <p class="subtitle">Transform text into audio, PDF, video, presentations, and more — for free!</p>
+            <a href="#converter" class="cta-button">Start Converting</a>
+        </div>
+    </header>
+
+    <section class="features">
+        <div class="container">
+            <h2>Our Free Tools</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <i class="fas fa-file-pdf"></i>
+                    <h3>Text to PDF</h3>
+                    <p>Generate clean, formatted PDF documents from any text.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-volume-up"></i>
+                    <h3>Text to Audio</h3>
+                    <p>Convert text to natural-sounding speech with multiple voice options.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-presentation"></i>
+                    <h3>Text to Presentation</h3>
+                    <p>Create beautiful slide presentations automatically from your text.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-project-diagram"></i>
+                    <h3>Text to Graphic Organizer</h3>
+                    <p>Visualize ideas and concepts with interactive diagrams.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-video"></i>
+                    <h3>Text to Video</h3>
+                    <p>Generate engaging video presentations with text and visuals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="converter" id="converter">
+        <div class="container">
+            <h2>Convert Your Text</h2>
+            <textarea id="inputText" placeholder="Enter or paste your text here..."></textarea>
+            <div>
+                <select id="conversionType">
+                    <option value="pdf">Text to PDF</option>
+                    <option value="audio">Text to Audio</option>
+                    <option value="presentation">Text to Presentation</option>
+                    <option value="graphic">Text to Graphic Organizer</option>
+                    <option value="video">Text to Video</option>
+                </select>
+                <button onclick="convert()">Convert Now</button>
+            </div>
+            <p id="status"></p>
+            
+            <div class="audio-controls" id="audioControls" style="display: none;">
+                <button onclick="playAudio()"><i class="fas fa-play"></i> Play</button>
+                <button onclick="pauseAudio()"><i class="fas fa-pause"></i> Pause</button>
+                <button onclick="stopAudio()"><i class="fas fa-stop"></i> Stop</button>
+                <button onclick="downloadAudio()"><i class="fas fa-download"></i> Download</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="output-section">
+        <div class="container">
+            <h3>Conversion Output</h3>
+            <div class="output-container">
+                <div id="outputPlaceholder">
+                    <p>Your converted content will appear here after conversion.</p>
+                </div>
+                <div id="graphicOrganizer" style="display: none;"></div>
+                <div id="videoPreview" style="display: none;">
+                    <div id="videoContent"></div>
+                </div>
+                <div id="presentationPreview" style="display: none;"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TheIdeaFlowAI. All rights reserved.</p>
+            <p>Free text conversion tools powered by AI</p>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let currentUtterance = null;
+        let audioBlob = null;
+        
+        // Main conversion function
+        function convert() {
+            const text = document.getElementById('inputText').value;
+            const type = document.getElementById('conversionType').value;
+            const status = document.getElementById('status');
+            const outputPlaceholder = document.getElementById('outputPlaceholder');
+            const graphicOrganizer = document.getElementById('graphicOrganizer');
+            const videoPreview = document.getElementById('videoPreview');
+            const presentationPreview = document.getElementById('presentationPreview');
+            const audioControls = document.getElementById('audioControls');
+            
+            // Hide all output containers first
+            outputPlaceholder.style.display = 'block';
+            graphicOrganizer.style.display = 'none';
+            videoPreview.style.display = 'none';
+            presentationPreview.style.display = 'none';
+            audioControls.style.display = 'none';
+            
+            status.textContent = 'Processing...';
+            
+            if (!text) {
+                status.textContent = 'Please enter some text!';
+                return;
+            }
+            
+            try {
+                switch(type) {
+                    case 'pdf':
+                        convertToPDF(text);
+                        status.textContent = 'PDF generated successfully!';
+                        break;
+                    case 'audio':
+                        convertToAudio(text);
+                        status.textContent = 'Audio generated successfully! Use controls to play.';
+                        break;
+                    case 'presentation':
+                        convertToPresentation(text);
+                        status.textContent = 'Presentation created successfully!';
+                        break;
+                    case 'graphic':
+                        convertToGraphicOrganizer(text);
+                        status.textContent = 'Graphic organizer generated successfully!';
+                        break;
+                    case 'video':
+                        convertToVideo(text);
+                        status.textContent = 'Video created successfully!';
+                        break;
+                    default:
+                        status.textContent = 'Please select a valid conversion type.';
+                }
+            } catch (error) {
+                console.error(error);
+                status.textContent = 'Error during conversion. Please try again.';
+            }
+        }
+        
+        // PDF Conversion
+        function convertToPDF(text) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Set font and add text with wrapping
+            doc.setFont("helvetica");
+            doc.setFontSize(12);
+            
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 20;
+            const maxWidth = pageWidth - margin * 2;
+            
+            // Split text into lines
+            const lines = doc.splitTextToSize(text, maxWidth);
+            
+            let y = margin;
+            const lineHeight = 7;
+            
+            // Add each line to the PDF
+            for (let i = 0; i < lines.length; i++) {
+                if (y > doc.internal.pageSize.getHeight() - margin) {
+                    doc.addPage();
+                    y = margin;
+                }
+                doc.text(lines[i], margin, y);
+                y += lineHeight;
+            }
+            
+            // Add header and footer
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text('Created with TheIdeaFlowAI', margin, doc.internal.pageSize.getHeight() - 10);
+            
+            // Save the PDF
+            doc.save('TheIdeaFlowAI-Output.pdf');
+        }
+        
+        // Audio Conversion
+        function convertToAudio(text) {
+            if (!window.speechSynthesis) {
+                document.getElementById('status').textContent = 'Text-to-speech not supported in your browser';
+                return;
+            }
+            
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+            
+            // Create new utterance
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.lang = 'en-US';
+            currentUtterance.rate = 1;
+            currentUtterance.pitch = 1;
+            currentUtterance.volume = 1;
+            
+            // Set up event handlers
+            currentUtterance.onend = function() {
+                document.getElementById('status').textContent = 'Audio playback completed!';
+            };
+            
+            currentUtterance.onerror = function(event) {
+                document.getElementById('status').textContent = 'Error playing audio: ' + event.error;
+            };
+            
+            // Show audio controls
+            document.getElementById('audioControls').style.display = 'flex';
+            
+            // For demonstration, we'll just play the audio
+            // In a real app, you might use a service to generate downloadable audio
+            playAudio();
+        }
+        
+        function playAudio() {
+            if (currentUtterance) {
+                window.speechSynthesis.speak(currentUtterance);
+            }
+        }
+        
+        function pauseAudio() {
+            window.speechSynthesis.pause();
+        }
+        
+        function stopAudio() {
+            window.speechSynthesis.cancel();
+        }
+        
+        function downloadAudio() {
+            alert('In a full implementation, this would download the audio file. For now, use the playback controls.');
+        }
+        
+        // Presentation Conversion
+        function convertToPresentation(text) {
+            const presentationPreview = document.getElementById('presentationPreview');
+            const outputPlaceholder = document.getElementById('outputPlaceholder');
+            
+            outputPlaceholder.style.display = 'none';
+            presentationPreview.style.display = 'flex';
+            presentationPreview.innerHTML = '';
+            
+            // Split text into slides (by sentences for this demo)
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            
+            // Create slides
+            for (let i = 0; i < Math.min(sentences.length, 5); i++) {
+                const slide = document.createElement('div');
+                slide.className = 'slide';
+                slide.innerHTML = `
+                    <h3>Slide ${i+1}</h3>
+                    <p>${sentences[i].trim()}</p>
+                `;
+                presentationPreview.appendChild(slide);
+            }
+            
+            // Add download button
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = 'Download Presentation';
+            downloadBtn.onclick = downloadPresentation;
+            downloadBtn.style.marginTop = '20px';
+            presentationPreview.parentNode.appendChild(downloadBtn);
+        }
+        
+        function downloadPresentation() {
+            alert('In a full implementation, this would generate and download a PowerPoint file.');
+        }
+        
+        // Graphic Organizer Conversion
+        function convertToGraphicOrganizer(text) {
+            const graphicOrganizer = document.getElementById('graphicOrganizer');
+            const outputPlaceholder = document.getElementById('outputPlaceholder');
+            
+            outputPlaceholder.style.display = 'none';
+            graphicOrganizer.style.display = 'block';
+            graphicOrganizer.innerHTML = '';
+            
+            // Extract key concepts (simplified for demo)
+            const words = text.split(/\s+/);
+            const keyWords = words.filter(word => word.length > 5).slice(0, 8);
+            
+            // Create nodes
+            const centerX = graphicOrganizer.offsetWidth / 2;
+            const centerY = graphicOrganizer.offsetHeight / 2;
+            const radius = 150;
+            
+            // Create center node
+            const centerNode = document.createElement('div');
+            centerNode.className = 'node';
+            centerNode.textContent = 'Main Idea';
+            centerNode.style.left = (centerX - 50) + 'px';
+            centerNode.style.top = (centerY - 20) + 'px';
+            centerNode.style.backgroundColor = '#6a11cb';
+            graphicOrganizer.appendChild(centerNode);
+            
+            // Create surrounding nodes
+            keyWords.forEach((word, i) => {
+                const angle = (i / keyWords.length) * 2 * Math.PI;
+                const x = centerX + radius * Math.cos(angle) - 40;
+                const y = centerY + radius * Math.sin(angle) - 20;
+                
+                const node = document.createElement('div');
+                node.className = 'node';
+                node.textContent = word;
+                node.style.left = x + 'px';
+                node.style.top = y + 'px';
+                graphicOrganizer.appendChild(node);
+                
+                // Create connector line
+                const connector = document.createElement('div');
+                connector.className = 'connector';
+                const length = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+                const connectorAngle = Math.atan2(y - centerY, x - centerX) * 180 / Math.PI;
+                
+                connector.style.width = length + 'px';
+                connector.style.left = (centerX + 25) + 'px';
+                connector.style.top = (centerY + 10) + 'px';
+                connector.style.transform = `rotate(${connectorAngle}deg)`;
+                
+                graphicOrganizer.appendChild(connector);
+            });
+            
+            // Add download button
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = 'Download Graphic Organizer';
+            downloadBtn.onclick = downloadGraphicOrganizer;
+            downloadBtn.style.marginTop = '20px';
+            graphicOrganizer.parentNode.appendChild(downloadBtn);
+        }
+        
+        function downloadGraphicOrganizer() {
+            html2canvas(document.getElementById('graphicOrganizer')).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'graphic-organizer.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+        
+        // Video Conversion
+        function convertToVideo(text) {
+            const videoPreview = document.getElementById('videoPreview');
+            const videoContent = document.getElementById('videoContent');
+            const outputPlaceholder = document.getElementById('outputPlaceholder');
+            
+            outputPlaceholder.style.display = 'none';
+            videoPreview.style.display = 'flex';
+            
+            // Create a simple video representation
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            let currentSentence = 0;
+            
+            videoContent.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <h3 style="color: #2575fc; margin-bottom: 20px;">Your Video Presentation</h3>
+                    <div id="videoText" style="font-size: 1.2rem; margin-bottom: 20px; min-height: 100px;">${sentences[0] || text}</div>
+                    <div style="display: flex; justify-content: center; gap: 10px;">
+                        <button onclick="previousVideoSlide()" style="padding: 8px 16px; background: #2575fc; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous</button>
+                        <button onclick="nextVideoSlide()" style="padding: 8px 16px; background: #2575fc; color: white; border: none; border-radius: 4px; cursor: pointer;">Next</button>
+                    </div>
+                </div>
+            `;
+            
+            // Store sentences for navigation
+            window.videoSentences = sentences;
+            window.currentVideoSlide = 0;
+            
+            // Add download button
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = 'Export Video';
+            downloadBtn.onclick = downloadVideo;
+            downloadBtn.style.marginTop = '20px';
+            videoPreview.parentNode.appendChild(downloadBtn);
+        }
+        
+        function nextVideoSlide() {
+            if (window.currentVideoSlide < window.videoSentences.length - 1) {
+                window.currentVideoSlide++;
+                document.getElementById('videoText').textContent = window.videoSentences[window.currentVideoSlide];
+            }
+        }
+        
+        function previousVideoSlide() {
+            if (window.currentVideoSlide > 0) {
+                window.currentVideoSlide--;
+                document.getElementById('videoText').textContent = window.videoSentences[window.currentVideoSlide];
+            }
+        }
+        
+        function downloadVideo() {
+            alert('In a full implementation, this would generate and download a video file.');
+        }
+    </script>
+</body>
+</html>
