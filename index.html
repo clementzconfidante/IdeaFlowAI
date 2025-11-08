@@ -90,10 +90,28 @@
                 doc.text(text, 10, 10);
                 doc.save('output.pdf');
                 status.textContent = 'PDF downloaded!';
-            } else {
+            } 
+            else if (conversionType === "Text to Audio") {
+  const text = document.getElementById("inputText").value;
+  if (!text.trim()) {
+    alert("Please enter some text first.");
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.rate = 1;
+  utterance.pitch = 1;
+  window.speechSynthesis.speak(utterance);
+
+  alert("Speaking your text now!");
+}
+
+            else {
                 status.textContent = 'Feature coming soon! Try PDF for now.';
             }
         }
     </script>
 </body>
 </html>
+
