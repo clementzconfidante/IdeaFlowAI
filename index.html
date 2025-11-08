@@ -3,38 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Idea Flow AI</title>
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-
+  <title>TheIdeaFlowAI - Free Text Conversion</title>
+  <meta name="description" content="Convert text to audio, PDF, video, presentations, and graphic organizers for free with AI.">
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to bottom right, #00b4db, #0083b0);
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    header { background: linear-gradient(135deg, #00b4db, #0083b0); color: white; text-align: center; padding: 60px 0; }
+    header img { width: 80px; height: 80px; margin-bottom: 15px; border-radius: 50%; }
+    h1 { font-size: 2.5rem; margin-bottom: 20px; }
+    .subtitle { font-size: 1.2rem; margin-bottom: 30px; }
+    .cta-button { background: #ff6b6b; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; }
+    .cta-button:hover { background: #ff5252; }
+    .features { padding: 60px 0; background: #f4f4f4; }
+    .features h2 { text-align: center; font-size: 2rem; margin-bottom: 40px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .feature { background: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .converter { padding: 60px 0; text-align: center; }
+    .converter textarea { width: 100%; max-width: 600px; height: 150px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 20px; font-size: 1rem; }
+    .converter select, .converter button { padding: 10px 20px; margin: 0 10px; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
+    .converter button { background: #00b4db; color: white; }
+    .converter button:hover { background: #0083b0; }
+    footer { background: #333; color: white; text-align: center; padding: 20px 0; }
+    @media (max-width: 768px) { h1 { font-size: 1.8rem; } .subtitle { font-size: 1rem; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <img src="logo.png" alt="TheIdeaFlowAI Logo">
+      <h1>TheIdeaFlowAI</h1>
+      <p class="subtitle">Transform text into audio, PDF, video, presentations, and more — for free!</p>
+      <a href="#converter" class="cta-button">Start Converting</a>
+    </div>
+  </header>
 
-    header img {
-      width: 120px;
-      height: auto;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
+  <section class="features">
+    <div class="container">
+      <h2>Our Free Tools</h2>
+      <div class="feature-grid">
+        <div class="feature"><h3>Text to Audio</h3><p>Create natural-sounding audio from text.</p></div>
+        <div class="feature"><h3>Text to PDF</h3><p>Generate clean PDFs instantly.</p></div>
+        <div class="feature"><h3>Text to Presentation</h3><p>Turn text into PowerPoint slides.</p></div>
+        <div class="feature"><h3>Text to Graphic Organizer</h3><p>Visualize ideas with diagrams.</p></div>
+        <div class="feature"><h3>Text to Video</h3><p>Make simple slideshow videos.</p></div>
+      </div>
+    </div>
+  </section>
 
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-    }
+  <section class="converter" id="converter">
+    <div class="container">
+      <h2>Convert Now</h2>
+      <textarea id="inputText" placeholder="Paste your text here..."></textarea>
+      <select id="conversionType">
+        <option value="pdf">Text to PDF</option>
+        <option value="audio">Text to Audio</option>
+        <option value="presentation">Text to Presentation</option>
+        <option value="graphic">Text to Graphic Organizer</option>
+        <option value="video">Text to Video</option>
+      </select>
+      <button onclick="convert()">Convert</button>
+      <p id="status"></p>
+    </div>
+  </section>
 
-    p {
-      font-size: 1.1
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 TheIdeaFlowAI. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.10.0/pptxgen.min.js"></script>
+  <script>
+    async function convert() {
+      const text = document.getElementById('inputText').value.trim();
+      const type = document.getElementById('conversionType').value;
+      const status = document.getElementById('status');
+      status.textContent = 'Processing...';
+
+      if (!text) {
+        status.textContent = 'Please enter some text!';
+        return;
+      }
+
+      try {
+        if (type === 'pdf') {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+          doc.text(text, 10, 10);
+          doc.save('output.pdf');
+          status.textContent = 'PDF downloaded!';
+        } else if (type === 'audio') {
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'en-US';
+          speechSynthesis.speak(utterance);
+          status.textContent = 'Speaking your text now!';
+        } else if (type === 'presentation') {
+          const pptx = new PptxGenJS();
+          const slide = pptx.addSlide();
+          slide.addText(text, { x: 1, y: 1, w: 8, h: 4, fontSize: 24 });
+          pptx.writeFile({ fileName: 'presentation.pptx' });
+          status.textContent = 'Presentation downloaded!';
+        } else if (type === 'graphic') {
+          const canvas = document.createElement('canvas');
+          canvas.width = 800; canvas.height = 600;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle
