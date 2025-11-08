@@ -1,43 +1,20 @@
-function convert() {
-    const text = document.getElementById('inputText').value;
-    const type = document.getElementById('conversionType').value;
-    const status = document.getElementById('status');
-    status.textContent = 'Processing...';
-
-    if (!text) {
-        status.textContent = 'Please enter some text!';
-        return;
-    }
-
-    if (type === 'pdf') {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const lines = doc.splitTextToSize(text, 180); // Wrap text to fit page
-        doc.text(lines, 10, 10);
-        doc.save('output.pdf');
-        status.textContent = 'PDF downloaded!';
-    } 
-    else if (type === 'audio') {
-        if (!window.speechSynthesis) {
-            status.textContent = 'Text-to-speech not supported in your browser';
-            return;
-        }
-
-        // Cancel any ongoing speech
-        window.speechSynthesis.cancel();
-
-        const utterance = new SpeechSynthesisUtterance(text); // Fixed: removed extra parenthesis
-        utterance.lang = "en-US";
-        utterance.rate = 1;
-        utterance.pitch = 1;
-        utterance.onend = function() {
-            status.textContent = "Audio playback completed!"; // Fixed: consistent quotes
-        };
-        utterance.onerror = function() {
-            status.textContent = 'Error playing audio';
-        };
-        window.speechSynthesis.speak(utterance);
-        status.textContent = "Speaking your text now..."; // Fixed: consistent quotes
-    }
-    else {
-        status.textContent = '
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheIdeaFlowAI - Complete Text Conversion Suite</title>
+    <meta name="description" content="Convert text to audio, PDF, video, presentations, and graphic organizers for free with AI.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white; text-align: center; padding: 80px 0; }
+        h1 { font-size: 2.8rem; margin-bottom: 20px; font-weight: 700; }
+        .subtitle { font-size: 1.3rem; margin-bottom: 30px; opacity: 0.9; }
+        .cta-button { background: #ff6b6b; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4); }
+        .cta-button:hover { background: #ff5252; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6); }
+        .features { padding: 80px 0; background: white; }
+        .features h2 { text-align: center; font-size: 2.2rem; margin-bottom: 50px; color: #2c3e50; }
+        .feature-grid { display: grid; grid-template
