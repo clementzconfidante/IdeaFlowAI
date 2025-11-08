@@ -1,126 +1,40 @@
-<select id="conversionType">
-  <option value="pdf">Text to PDF</option>
-  <option value="audio">Text to Audio</option>
-  <option value="presentation">Text to Presentation</option>
-  <option value="graphic">Text to Graphic Organizer</option>
-  <option value="video">Text to Video</option>
-</select>
-<button onclick="convert()">Convert</button>
-<p id="status"></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Idea Flow AI</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script>
-  async function convert() {
-    const text = document.getElementById('inputText').value;
-    const type = document.getElementById('conversionType').value;
-    const status = document.getElementById('status');
-    status.textContent = 'Processing...';
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
-    if (!text.trim()) {
-      status.textContent = 'Please enter some text!';
-      return;
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom right, #00b4db, #0083b0);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      margin: 0;
+      padding: 0;
     }
 
-    // ✅ Text → PDF
-    if (type === 'pdf') {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.text(text, 10, 10);
-      doc.save('output.pdf');
-      status.textContent = 'PDF downloaded!';
+    header img {
+      width: 120px;
+      height: auto;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
 
-    // ✅ Text → Audio
-    else if (type === 'audio') {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = 1;
-      utterance.pitch = 1;
-      window.speechSynthesis.speak(utterance);
-      status.textContent = 'Speaking your text now!';
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
     }
 
-    // ✅ Text → Presentation (simple slide-like PDF)
-    else if (type === 'presentation') {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const slides = text.split(/\n\s*\n/); // separate slides by blank lines
-      slides.forEach((slide, i) => {
-        if (i > 0) doc.addPage();
-        doc.setFontSize(20);
-        doc.text(`Slide ${i + 1}`, 10, 20);
-        doc.setFontSize(12);
-        doc.text(slide, 10, 40);
-      });
-      doc.save('presentation.pdf');
-      status.textContent = 'Presentation downloaded!';
-    }
-
-    // ✅ Text → Graphic Organizer (simple auto diagram)
-    else if (type === 'graphic') {
-      const words = text.split(/[.,!?]/).map(s => s.trim()).filter(Boolean);
-      const canvas = document.createElement('canvas');
-      canvas.width = 800;
-      canvas.height = 600;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#0083b0';
-      ctx.font = '16px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('Graphic Organizer', 400, 50);
-
-      let angleStep = (2 * Math.PI) / words.length;
-      let radius = 200;
-      words.forEach((word, i) => {
-        let x = 400 + radius * Math.cos(i * angleStep);
-        let y = 300 + radius * Math.sin(i * angleStep);
-        ctx.beginPath();
-        ctx.arc(x, y, 50, 0, Math.PI * 2);
-        ctx.fillStyle = '#00b4db';
-        ctx.fill();
-        ctx.stroke();
-        ctx.fillStyle = 'white';
-        ctx.fillText(word, x, y + 5);
-      });
-      const link = document.createElement('a');
-      link.download = 'graphic-organizer.png';
-      link.href = canvas.toDataURL();
-      link.click();
-      status.textContent = 'Graphic Organizer downloaded!';
-    }
-
-    // ✅ Text → Video (slideshow-style)
-    else if (type === 'video') {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = 640;
-      canvas.height = 360;
-      ctx.fillStyle = '#00b4db';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#fff';
-      ctx.font = '20px Arial';
-      ctx.fillText(text, 50, 180, 540);
-
-      const stream = canvas.captureStream(30);
-      const recorder = new MediaRecorder(stream);
-      const chunks = [];
-
-      recorder.ondataavailable = e => chunks.push(e.data);
-      recorder.onstop = e => {
-        const blob = new Blob(chunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'text-video.webm';
-        a.click();
-      };
-
-      recorder.start();
-      setTimeout(() => {
-        recorder.stop();
-        status.textContent = 'Video created!';
-      }, 3000);
-    }
-  }
-</script>
+    p {
+      font-size: 1.1
