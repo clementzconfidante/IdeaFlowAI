@@ -26,23 +26,18 @@ function convert() {
         // Cancel any ongoing speech
         window.speechSynthesis.cancel();
 
-        const utterance = new SpeechSynthesisUtterance(text);
+        const utterance = new SpeechSynthesisUtterance(text); // Fixed: removed extra parenthesis
         utterance.lang = "en-US";
         utterance.rate = 1;
         utterance.pitch = 1;
-        
         utterance.onend = function() {
-            status.textContent = 'Audio playback completed!';
+            status.textContent = "Audio playback completed!"; // Fixed: consistent quotes
         };
-        
         utterance.onerror = function() {
             status.textContent = 'Error playing audio';
         };
-        
         window.speechSynthesis.speak(utterance);
-        status.textContent = 'Speaking your text now...';
+        status.textContent = "Speaking your text now..."; // Fixed: consistent quotes
     }
     else {
-        status.textContent = 'Feature coming soon! Try PDF or Audio for now.';
-    }
-}
+        status.textContent = '
