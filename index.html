@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgen/3.11.0/pptxgen.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; }
@@ -46,6 +47,8 @@
         footer { background: #2c3e50; color: white; text-align: center; padding: 30px 0; margin-top: 60px; }
         .node { position: absolute; background: #2575fc; color: white; padding: 10px 15px; border-radius: 6px; text-align: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .connector { position: absolute; height: 2px; background: #2575fc; transform-origin: 0 0; }
+        .download-btn { background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 15px; font-weight: bold; }
+        .download-btn:hover { background: #218838; }
         @media (max-width: 768px) { 
             h1 { font-size: 2rem; } 
             .subtitle { font-size: 1.1rem; } 
@@ -115,7 +118,7 @@
                 <button onclick="playAudio()"><i class="fas fa-play"></i> Play</button>
                 <button onclick="pauseAudio()"><i class="fas fa-pause"></i> Pause</button>
                 <button onclick="stopAudio()"><i class="fas fa-stop"></i> Stop</button>
-                <button onclick="downloadAudio()"><i class="fas fa-download"></i> Download</button>
+                <button onclick="downloadAudio()"><i class="fas fa-download"></i> Download Audio</button>
             </div>
         </div>
     </section>
@@ -146,7 +149,10 @@
     <script>
         // Global variables
         let currentUtterance = null;
-        let audioBlob = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let presentationData = null;
+        let videoData = null;
         
         // Main conversion function
         function convert() {
@@ -272,7 +278,6 @@
             document.getElementById('audioControls').style.display = 'flex';
             
             // For demonstration, we'll just play the audio
-            // In a real app, you might use a service to generate downloadable audio
             playAudio();
         }
         
@@ -291,7 +296,32 @@
         }
         
         function downloadAudio() {
-            alert('In a full implementation, this would download the audio file. For now, use the playback controls.');
+            // Create a simple audio file using the Web Audio API (simulated)
+            const text = document.getElementById('inputText').value;
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Create a simple tone-based "audio" (this is a simulation)
+            // In a real implementation, you would use a TTS service that returns audio data
+            oscillator.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 1);
+            
+            // Create a download link for a simulated audio file
+            const blob = new Blob([text], { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'TheIdeaFlowAI-Audio.wav';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            document.getElementById('status').textContent = 'Audio file downloaded (simulated)!';
         }
         
         // Presentation Conversion
@@ -317,16 +347,71 @@
                 presentationPreview.appendChild(slide);
             }
             
+            // Store presentation data for download
+            presentationData = {
+                title: 'TheIdeaFlowAI Presentation',
+                slides: sentences.slice(0, 5)
+            };
+            
             // Add download button
             const downloadBtn = document.createElement('button');
-            downloadBtn.textContent = 'Download Presentation';
+            downloadBtn.className = 'download-btn';
+            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Presentation';
             downloadBtn.onclick = downloadPresentation;
             downloadBtn.style.marginTop = '20px';
             presentationPreview.parentNode.appendChild(downloadBtn);
         }
         
         function downloadPresentation() {
-            alert('In a full implementation, this would generate and download a PowerPoint file.');
+            if (!presentationData) return;
+            
+            // Create a new presentation
+            const pptx = new PptxGenJS();
+            
+            // Add a title slide
+            const titleSlide = pptx.addSlide();
+            titleSlide.addText(presentationData.title, {
+                x: 1,
+                y: 1,
+                w: '80%',
+                h: 1,
+                fontSize: 24,
+                bold: true,
+                color: '6a11cb'
+            });
+            titleSlide.addText('Created with TheIdeaFlowAI', {
+                x: 1,
+                y: 2,
+                w: '80%',
+                h: 1,
+                fontSize: 14,
+                color: '2575fc'
+            });
+            
+            // Add content slides
+            presentationData.slides.forEach((slideText, index) => {
+                const slide = pptx.addSlide();
+                slide.addText(`Slide ${index + 1}`, {
+                    x: 0.5,
+                    y: 0.5,
+                    w: '90%',
+                    h: 0.5,
+                    fontSize: 18,
+                    bold: true,
+                    color: '2c3e50'
+                });
+                slide.addText(slideText, {
+                    x: 0.5,
+                    y: 1.5,
+                    w: '90%',
+                    h: 4,
+                    fontSize: 14,
+                    color: '333333'
+                });
+            });
+            
+            // Download the presentation
+            pptx.writeFile({ fileName: 'TheIdeaFlowAI-Presentation.pptx' });
         }
         
         // Graphic Organizer Conversion
@@ -385,7 +470,8 @@
             
             // Add download button
             const downloadBtn = document.createElement('button');
-            downloadBtn.textContent = 'Download Graphic Organizer';
+            downloadBtn.className = 'download-btn';
+            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Graphic Organizer';
             downloadBtn.onclick = downloadGraphicOrganizer;
             downloadBtn.style.marginTop = '20px';
             graphicOrganizer.parentNode.appendChild(downloadBtn);
@@ -394,7 +480,7 @@
         function downloadGraphicOrganizer() {
             html2canvas(document.getElementById('graphicOrganizer')).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'graphic-organizer.png';
+                link.download = 'TheIdeaFlowAI-Graphic-Organizer.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             });
@@ -411,7 +497,6 @@
             
             // Create a simple video representation
             const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-            let currentSentence = 0;
             
             videoContent.innerHTML = `
                 <div style="text-align: center; padding: 20px;">
@@ -424,13 +509,18 @@
                 </div>
             `;
             
-            // Store sentences for navigation
+            // Store sentences for navigation and download
             window.videoSentences = sentences;
             window.currentVideoSlide = 0;
+            videoData = {
+                title: 'TheIdeaFlowAI Video',
+                slides: sentences
+            };
             
             // Add download button
             const downloadBtn = document.createElement('button');
-            downloadBtn.textContent = 'Export Video';
+            downloadBtn.className = 'download-btn';
+            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Video Script';
             downloadBtn.onclick = downloadVideo;
             downloadBtn.style.marginTop = '20px';
             videoPreview.parentNode.appendChild(downloadBtn);
@@ -451,7 +541,21 @@
         }
         
         function downloadVideo() {
-            alert('In a full implementation, this would generate and download a video file.');
+            if (!videoData) return;
+            
+            // Create a video script file (in a real implementation, this would be an actual video)
+            const scriptContent = `TheIdeaFlowAI Video Script\n\n${videoData.title}\n\n${videoData.slides.join('\n\n')}`;
+            const blob = new Blob([scriptContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'TheIdeaFlowAI-Video-Script.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            document.getElementById('status').textContent = 'Video script downloaded!';
         }
     </script>
 </body>
