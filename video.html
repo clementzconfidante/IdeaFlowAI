@@ -1,24 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IdeaFlowAI - Where Ideas Transform</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: white;
-      text-align: center;
-      padding: 80px 20px;
-    }
-    h1 { font-size: 3em; margin-bottom: 0.3em; }
-    p { font-size: 1.2em; color: #a8dadc; margin-bottom: 40px; }
-    .btn {
-      background-color: #1dd3b0;
-      color: #000;
-      padding: 15px 30px;
-      border-radius: 30px;
-      font-weight: bold;
-      text-decoration: none;
-      margin: 10px;
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IdeaFlowAI - Where Ideas Transform</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            text-align: center;
+            padding: 80px 20px;
+            min-height: 100vh;
+        }
+        h1 { font-size: 3em; margin-bottom: 0.3em; }
+        p { font-size: 1.2em; color: #a8dadc; margin-bottom: 40px; }
+        
+        /* === COMPLETED BUTTON AND FORM STYLES === */
+        .btn {
+            background-color: #1dd3b0; /* Bright Teal */
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .btn:hover {
+            background-color: #17a990;
+            transform: translateY(-2px);
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+        #loginStatus {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #f7ff00;
+        }
+        /* Style for the restricted converter section */
+        #converter {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="authSection">
+        <h1>IdeaFlowAI</h1>
+        <p>Transform your thoughts into professional formats instantly. Log in or Sign Up to begin.</p>
+        
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        
+        <button class="btn" onclick="handleAuth()">Login / Sign Up</button>
+        
+        <p id="loginStatus">Waiting for authentication...</p>
+    </div>
+
+    <div class="container" id="converter" style="display: none;">
+        <h2>✨ Conversion Suite Activated</h2>
+        <p>You are logged in! Start converting your text now.</p>
+        
+        <textarea placeholder="Enter your text here..." rows="5" style="width: 100%; padding: 15px; border-radius: 8px; margin-bottom: 15px;"></textarea>
+        <select style="padding: 10px; border-radius: 5px; margin-right: 10px; color: #333;">
+            <option>Text to Video</option>
+            <option>Text to PDF</option>
+            <option>Text to Audio</option>
+        </select>
+        <button class="btn" style="background-color: #007bff; color: white;">Convert</button>
+        <button class="btn" style="background-color: #ff6b6b; color: white;" onclick="auth.signOut()">Log Out</button>
+
+    </div>
+
+    <script>
+        // NOTE: Replace the values below with your actual Firebase project configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Initialize Firebase only if the config is valid
+        if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+
+            async function handleAuth() {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const loginStatus = document.getElementById('loginStatus');
+                loginStatus.textContent = 'Processing...';
+
+                try {
+                    // 1. Try to sign the user in.
+                    await auth.signInWithEmailAndPassword(email, password);
+                    loginStatus.textContent = 'Successfully Logged In!';
+                    
+                } catch (error) {
+                    // If sign-in fails, check the error code
+                    if (error.code === 'auth/user-not-found') {
+                        // 2. If the user doesn't exist, attempt to create the account.
+                        try {
+                            await auth.createUserWithEmailAndPassword(email, password);
+                            loginStatus.textContent = 'Account Created and Logged In!';
+                        } catch (signupError) {
+                            // Handle creation errors (e.g., weak password, invalid email)
+                            loginStatus.textContent = `Sign-up Error: ${signupError.message}`;
+                        }
+
+                    } else if (error.code === 'auth/wrong-password') {
+                        loginStatus.textContent = 'Error: Incorrect password.';
+                    } else {
+                        // Handle all other errors (e.g., invalid email format, network issues)
+                        loginStatus.textContent = `Login Error: ${error.message}`;
+                    }
+                }
+            }
+
+            // Listener to show/hide the converter section based on login status
+            auth.onAuthStateChanged(user => {
+                const converter = document.getElementById('converter');
+                const loginStatus = document.getElementById('loginStatus');
+
+                if (user) {
+                    converter.style.display = 'block';
+                    loginStatus.textContent = `Logged in as ${user.email}.`;
+                } else {
+                    converter.style.display = 'none';
+                    loginStatus.textContent = 'Please log in to use the converter.';
+                }
+            });
+
+            // Make handleAuth available globally
+            window.handleAuth = handleAuth;
+        } else {
+            document.getElementById('loginStatus').textContent = '⚠️ WARNING: Firebase not configured. Conversion is disabled.';
+            console.error("Firebase config is missing or invalid. Please update firebaseConfig.");
+        }
+    </script>
+</body>
+</html>
