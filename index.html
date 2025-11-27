@@ -93,7 +93,45 @@
             h1 { font-size: 2rem; } 
             .subtitle { font-size: 1.1rem; } 
             .converter select, .converter button { margin: 5px; width: 100%; max-width: 300px; }
-        }
+        } 
+        /* Custom House Ad Style */
+.house-ad {
+    margin: 40px auto; /* Adds space above and below */
+    padding: 20px;
+    max-width: 500px;
+    background-color: #38a3a5; /* Teal background for contrast */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    border: 2px solid #57cc99; /* Bright border */
+}
+
+.house-ad h3 {
+    font-size: 1.5em;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.house-ad p {
+    color: #e5ffff;
+    font-size: 1em;
+    margin-bottom: 20px;
+}
+
+.house-ad-btn {
+    background-color: #ff6b6b; /* Red call-to-action color */
+    color: white;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s;
+}
+
+.house-ad-btn:hover {
+    background-color: #e63946;
+}
     </style> 
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9347999276662282"
      crossorigin="anonymous"></script>
@@ -105,7 +143,29 @@
             <p class="subtitle">Transform text into audio, PDF, video, presentations, and more — for free!</p>
             <a href="#converter" class="cta-button">Start Converting Instantly</a> </div>
     </header>
+<p id="loginStatus">Waiting for authentication...</p>
+</div>
 
+<div class="house-ad">
+    </div>
+
+<div class="container" id="converter" style="display: none;">
+    ```
+
+### **Placement B: Inside the Converter Section (Post-Login)**
+
+This targets users who are actively using the tool. Place the ad **inside** the `#converter` `div`. This way, it only appears *after* the user successfully logs in, targeting active leads.
+
+```html
+    <div class="container" id="converter" style="display: none;">
+        <h2>✨ Conversion Suite Activated</h2>
+        <p>You are logged in! Start converting your text now.</p>
+        
+        <div class="house-ad">
+            </div>
+
+        <textarea>...</textarea>
+        </div>
     <section class="ai-benefits">
         <div class="container">
             <h2>The Power of AI Conversion</h2>
@@ -172,6 +232,11 @@
         </div>
     </section>
 
+    <div class="house-ad">
+    <h3>🚀 Unlock IdeaFlowAI Pro!</h3>
+    <p>Remove all limits, get faster conversions, and access 5 new AI tools. Start your free trial today!</p>
+    <a href="[YOUR_PRODUCT_PAGE_URL]" class="house-ad-btn">Start 7-Day Free Trial</a>
+</div>
     <section class="output-section">
         <div class="container">
             <h3>Conversion Output</h3>
@@ -629,5 +694,6 @@
             const scriptContent = `TheIdeaFlowAI Video Script\n\n${videoData.title}\n\n${videoData.slides.join('\n\n')}`;
             const blob = new Blob([scriptContent], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
+
 
 
