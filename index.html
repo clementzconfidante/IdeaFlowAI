@@ -143,29 +143,7 @@
             <p class="subtitle">Transform text into audio, PDF, video, presentations, and more — for free!</p>
             <a href="#converter" class="cta-button">Start Converting Instantly</a> </div>
     </header>
-<p id="loginStatus">Waiting for authentication...</p>
-</div>
 
-<div class="house-ad">
-    </div>
-
-<div class="container" id="converter" style="display: none;">
-    ```
-
-### **Placement B: Inside the Converter Section (Post-Login)**
-
-This targets users who are actively using the tool. Place the ad **inside** the `#converter` `div`. This way, it only appears *after* the user successfully logs in, targeting active leads.
-
-```html
-    <div class="container" id="converter" style="display: none;">
-        <h2>✨ Conversion Suite Activated</h2>
-        <p>You are logged in! Start converting your text now.</p>
-        
-        <div class="house-ad">
-            </div>
-
-        <textarea>...</textarea>
-        </div>
     <section class="ai-benefits">
         <div class="container">
             <h2>The Power of AI Conversion</h2>
@@ -689,6 +667,7 @@ This targets users who are actively using the tool. Place the ad **inside** the 
             const scriptContent = `TheIdeaFlowAI Video Script\n\n${videoData.title}\n\n${videoData.slides.join('\n\n')}`;
             const blob = new Blob([scriptContent], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
+
 
 
 
